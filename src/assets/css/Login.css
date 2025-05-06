@@ -21,7 +21,7 @@
     /* border: 1px solid black; */
     padding: 10px;
     margin: 10px;
-    width: 20vw;
+    width: 30vw;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -35,4 +35,22 @@
 
 .loginBN:hover {
     background-color: aqua;
+}
+
+.storelocally {
+    margin-right: 10px;
+}
+
+.field-radios {
+    display: flex;
+    align-items: center;
+}
+
+.field-radio {
+    padding: 0 6px;
+}
+
+.field-radio input {
+    margin-right: 3px;
+    cursor: pointer;
 }
