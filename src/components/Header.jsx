@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 const Header = () => {
     const navigate = useNavigate();
 
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
         navigate("/");
     };
 
@@ -16,7 +17,7 @@ const Header = () => {
             <div></div>
             <p className="header-title">Mini Project Two</p>
 
-            {userData ? (
+            {token ? (
                 <div>
                     <button className="header-bns registerBn" onClick={handleLogout}>
                         Logout

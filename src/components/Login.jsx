@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 const Login = () => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [userRole, setUserRole] = useState('Patient');
-    const [selectedOption, setSelectedOption] = useState("option1");
     const Navigate = useNavigate();
 
     const loginHandler = async () => {
@@ -22,19 +22,26 @@ const Login = () => {
         // console.log(sendData);
 
         try {
-            let response = await axios.post("http://localhost:3000/login", sendData, {
+            let response = await axios.post("http://localhost:3000/user/login", sendData, {
                 headers: {
                     "Content-type": "Application/json"
                 }
             })
             if (response.status === 200) {
-                localStorage.setItem("user", JSON.stringify(response.data));
+                const token = await response.data.token;
+                Cookies.set("authToken", token, { expires: 1, path: "/" });
+                localStorage.setItem("token", token);
 
-                if (response.data.user_role === "PATIENT") {
+                const decoded = jwtDecode(token);
+                let role = decoded.roles;
+                localStorage.setItem("role", role);
+
+                if (role === "ROLE_PATIENT") {
                     Navigate("/appointment/list");
                 } else {
                     Navigate("/doctor/appointment");
                 }
+
                 toast.success("Welcome");
             }
         } catch (error) {
@@ -46,7 +53,7 @@ const Login = () => {
         <div className="loginpage-container">
             <div className="loginpage">
                 <h3 className="loginpage-title">Log in</h3>
-                <div className="loginpage-field">
+                {/* <div className="loginpage-field">
                     <label htmlFor="Patient">User Type</label>
                     <div className="field-radios">
                         <div className="field-radio">
@@ -60,10 +67,9 @@ const Login = () => {
                             <label htmlFor="Doctor">Doctor</label>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className="loginpage-field">
-                    {userRole === "Patient" && <label htmlFor="username">Mobile Number:</label>}
-                    {userRole === "Doctor" && <label htmlFor="username">Doctor Id:</label>}
+                    <label htmlFor="username">Username:</label>
                     <input type="text" name="username" id="username" required autoComplete="off"
                         onChange={(e) => { setUsername(e.target.value) }} />
                 </div>

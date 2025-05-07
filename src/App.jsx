@@ -32,26 +32,26 @@ function App() {
           <Route path="/*" element={<Page404 />} />
           <Route path="/patient/modifer" element={<PatientModifer />} />
 
-          <Route element={<PrivateComponents allowedRoles={["PATIENT", "ADMIN"]} />}>
+          <Route element={<PrivateComponents allowedRoles={["ROLE_PATIENT", "ROLE_ADMIN"]} />}>
             <Route path="/appointment/list" element={<ListOfAppointment />} />
             <Route path="/patient/appointment" element={<ListOfPatientAppointment />} />
             <Route path="/patient/medicine" element={<MedicineManagerPatientSide />} />
           </Route>
-          <Route element={<PrivateComponents allowedRoles={["DOCTOR", "ADMIN"]} />}>
+
+          <Route element={<PrivateComponents allowedRoles={["ROLE_DOCTOR", "ROLE_ADMIN"]} />}>
             <Route path="/doctor/appointment" element={<ListOfDoctorAppointment />} />
             <Route path="/docotor/medicine/add/:patientappointmentID" element={<MedicineManager />} />
           </Route>
-          <Route element={<PrivateComponents allowedRoles={["ADMIN"]} />}>
+
+          <Route element={<PrivateComponents allowedRoles={["ROLE_ADMIN"]} />}>
             <Route path="/patient/list" element={<ListOfPatient />} />
             <Route path="/patient/modifer/:update_id" element={<PatientModifer />} />
-
-
             <Route path="/doctor/list" element={<ListOfDoctor />} />
             <Route path="/doctor/modifer" element={<DoctorModifer />} />
             <Route path="/doctor/modifer/:update_id" element={<DoctorModifer />} />
-
             <Route path="/appointment/modifer" element={<AppointmentModifer />} />
           </Route>
+
         </Routes>
       </BrowserRouter>
     </>

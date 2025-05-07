@@ -2,14 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { jwtDecode } from "jwt-decode";
 
 const ListOfAppointment = () => {
 
     const [AppointmentList, setAppointmentList] = useState([]);
     const [patientappointment_id, setpatientappointment_id] = useState("PA" + Math.floor(1000 + Math.random() * 9000));
-    const [FilterDate, setFilterDate] = useState("");
 
-    let authUsername = JSON.parse(localStorage.getItem("user")).username;
+    let UserID = jwtDecode(localStorage.getItem("token")).userId;
 
     useEffect(() => {
         fetchData();
@@ -19,7 +19,8 @@ const ListOfAppointment = () => {
         try {
             let response = await axios.get("http://localhost:3000/appointment", {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             let data = response.data;
@@ -43,9 +44,10 @@ const ListOfAppointment = () => {
         let patient_issue = "";
 
         try {
-            let response = await axios.get(`http://localhost:3000/patient/contact/${authUsername}`, {
+            let response = await axios.get(`http://localhost:3000/patient/id/${UserID}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             patient_id = response.data.patient_id;
@@ -72,7 +74,8 @@ const ListOfAppointment = () => {
         try {
             let response = await axios.post("http://localhost:3000/patientappointments/add", BookData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -167,7 +170,8 @@ const AppointmentModifer = () => {
         try {
             let response = await axios.get("http://localhost:3000/doctor", {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             setDoctorList(response.data)
@@ -203,7 +207,8 @@ const AppointmentModifer = () => {
 
             let response = await axios.post("http://localhost:3000/appointment/add", FormData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             if (response.status === 201) {

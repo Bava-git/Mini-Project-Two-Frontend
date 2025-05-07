@@ -3,10 +3,11 @@ import axios from "axios";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const ListOfPatientAppointment = () => {
     const [PatientAppointmentList, setPatientAppointmentList] = useState([]);
-    let authUsername = JSON.parse(localStorage.getItem("user")).username;
+    let UserID = jwtDecode(localStorage.getItem("token")).userId;
 
     useEffect(() => {
         fetchData();
@@ -16,22 +17,17 @@ const ListOfPatientAppointment = () => {
         try {
             let response = await axios.get("http://localhost:3000/patientappointments", {
                 headers: {
-                    "Content-type": "Application/json"
-                }
-            })
-
-            let Filterresponse = await axios.get(`http://localhost:3000/patient/contact/${authUsername}`, {
-                headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
             let data = response.data;
-            let id = Filterresponse.data.patient_id;
             let Filterdata = data.filter((element) => {
-                return element.patient_id === id
+                return element.patient_id === UserID
             })
             setPatientAppointmentList(Filterdata)
+
         } catch (error) {
             console.log("List Of Doctor " + error);
         }
@@ -101,7 +97,7 @@ const ListOfPatientAppointment = () => {
 const ListOfDoctorAppointment = () => {
     const [DoctorAppointmentList, setDoctorAppointmentList] = useState([]);
     const Navigate = useNavigate();
-    let authUsername = JSON.parse(localStorage.getItem("user")).username;
+    let UserID = jwtDecode(localStorage.getItem("token")).userId;
 
     useEffect(() => {
         fetchData();
@@ -111,13 +107,14 @@ const ListOfDoctorAppointment = () => {
         try {
             let response = await axios.get("http://localhost:3000/patientappointments", {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
             let data = response.data;
             let Filterdata = data.filter((element) => {
-                return element.doctor_id === authUsername
+                return element.doctor_id === UserID
             })
             setDoctorAppointmentList(Filterdata)
         } catch (error) {
@@ -134,7 +131,8 @@ const ListOfDoctorAppointment = () => {
         try {
             let response = await axios.delete(`http://localhost:3000/patientappointments/delete/${id}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 

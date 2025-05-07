@@ -27,14 +27,16 @@ const MedicineManager = () => {
         try {
             let response = await axios.get(`http://localhost:3000/patientappointments/id/${patientappointmentID}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             setDisplayDetails(response.data);
 
             let PatientAppointmentresponse = await axios.get(`http://localhost:3000/medication/patientappointmentid/${patientappointmentID}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             setMedicationList(PatientAppointmentresponse.data);
@@ -52,7 +54,8 @@ const MedicineManager = () => {
         try {
             let response = await axios.delete(`http://localhost:3000/medication/delete/${id}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -103,7 +106,8 @@ const MedicineManager = () => {
         try {
             let response = await axios.get(`http://localhost:3000/patientappointments/id/${patientappointmentID}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             appointment_datetime = response.data.appointment_datetime;
@@ -145,7 +149,8 @@ const MedicineManager = () => {
         try {
             let response = await axios.post("http://localhost:3000/medication/add", sendData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -298,7 +303,8 @@ const MedicineManagerPatientSide = () => {
         try {
             let response = await axios.get("http://localhost:3000/medication", {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             setMedicationList(response.data);

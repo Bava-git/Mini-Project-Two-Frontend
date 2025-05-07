@@ -16,7 +16,8 @@ const ListOfDoctor = () => {
         try {
             let response = await axios.get("http://localhost:3000/doctor", {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             setDoctorList(response.data)
@@ -33,7 +34,8 @@ const ListOfDoctor = () => {
         try {
             let response = await axios.delete(`http://localhost:3000/doctor/delete/${id}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -101,6 +103,7 @@ const DoctorModifer = () => {
         doctor_specializedfield: "",
     });
     const DoctorForm = useRef(null);
+    const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
     const [ConfirmPassword, setConfirmPassword] = useState('');
 
@@ -117,7 +120,8 @@ const DoctorModifer = () => {
 
             let response = await axios.get(`http://localhost:3000/doctor/id/${update_id}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -146,7 +150,8 @@ const DoctorModifer = () => {
 
             let response = await axios.put(`http://localhost:3000/doctor/update/${update_id}`, FormData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -160,7 +165,6 @@ const DoctorModifer = () => {
             console.log("Doctor " + error);
         }
     }
-
 
     const handleChanges = (event) => {
         const { name, value } = event.target;
@@ -191,9 +195,10 @@ const DoctorModifer = () => {
         }
 
         let registerData = {
-            username: FormData.doctor_id,
+            userid: FormData.doctor_id,
+            username: Username,
             password: ConfirmPassword,
-            user_role: "DOCTOR"
+            user_role: "ROLE_DOCTOR"
         }
 
         // console.log(FormData);
@@ -203,13 +208,15 @@ const DoctorModifer = () => {
 
             let personalresponse = await axios.post("http://localhost:3000/doctor/add", FormData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
-            let registerresponse = await axios.post("http://localhost:3000/register", registerData, {
+            let registerresponse = await axios.post("http://localhost:3000/user/register", registerData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -236,6 +243,7 @@ const DoctorModifer = () => {
             doctor_education: "",
             doctor_specializedfield: "",
         });
+        setUsername("");
         setPassword("");
         setConfirmPassword("");
     }
@@ -273,6 +281,12 @@ const DoctorModifer = () => {
                             <div className="patientmodifer-formcontainer-logindetails">
                                 <h3>Generate Password</h3>
                                 <div className="patientmodifer-formcontainer-field">
+                                    <label htmlFor="username">Username:</label>
+                                    <input type="text" name="username" id="username" required
+                                        value={Username} onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                </div>
+                                <div className="patientmodifer-formcontainer-field">
                                     <label htmlFor="password">New Password:</label>
                                     <input type="text" name="password" id="password" required
                                         value={Password} onChange={(e) => setPassword(e.target.value)}
@@ -288,7 +302,7 @@ const DoctorModifer = () => {
                     </div>
                     <div className="patientmodifer-formcontainer-field">
                         <div></div>
-                        {update_id === "" ?
+                        {!update_id ?
                             (<button className="header-bns" onClick={(e) => { handleSubmit(e) }}>Submit</button>)
                             :
                             (<button className="header-bns" onClick={(e) => { handleUpdate(e) }}>Update</button>)

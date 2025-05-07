@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 const LeftSliter = () => {
 
     const Navigate = useNavigate();
-    const role = JSON.parse(localStorage.getItem("user") || "{}")?.user_role || "";
+    const role = localStorage.getItem("role") || "";
 
     return (
         <div className="leftsliter-container">
-            {(role === "PATIENT" || role === "ADMIN") && (
+            {(role === "ROLE_PATIENT" || role === "ROLE_ADMIN") && (
                 <div>
                     <button className="leftSilter-Bns" onClick={() => { Navigate("/appointment/list"); }}>
                         <img className="leftSilter-icon"
@@ -29,7 +29,7 @@ const LeftSliter = () => {
                     </button>
                 </div>)}
 
-            {(role === "DOCTOR" || role === "ADMIN") && (
+            {(role === "ROLE_DOCTOR" || role === "ROLE_ADMIN") && (
                 < div >
                     <button className="leftSilter-Bns" onClick={() => { Navigate("/doctor/appointment"); }}>
                         <img className="leftSilter-icon"
@@ -39,7 +39,7 @@ const LeftSliter = () => {
                     </button>
                 </div>
             )}
-            {role === "ADMIN" && (
+            {role === "ROLE_ADMIN" && (
                 <div>
                     <button className="leftSilter-Bns" onClick={() => { Navigate("/doctor/list"); }}>
                         <img className="leftSilter-icon"

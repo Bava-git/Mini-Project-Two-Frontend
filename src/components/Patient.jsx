@@ -15,7 +15,8 @@ const ListOfPatient = () => {
         try {
             let response = await axios.get(`http://localhost:3000/patient`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
             setPatientList(response.data)
@@ -32,7 +33,8 @@ const ListOfPatient = () => {
         try {
             let response = await axios.delete(`http://localhost:3000/patient/delete/${id}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -110,6 +112,7 @@ const PatientModifer = () => {
         patient_contact: "",
         patient_issue: ""
     });
+    const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
     const [ConfirmPassword, setConfirmPassword] = useState('');
     const PatientForm = useRef(null);
@@ -127,7 +130,8 @@ const PatientModifer = () => {
 
             let response = await axios.get(`http://localhost:3000/patient/id/${update_id}`, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -159,7 +163,8 @@ const PatientModifer = () => {
 
             let response = await axios.put(`http://localhost:3000/patient/update/${update_id}`, FormData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -205,9 +210,10 @@ const PatientModifer = () => {
         }
 
         let registerData = {
-            username: FormData.patient_contact,
+            userid: FormData.patient_id,
+            username: Username,
             password: ConfirmPassword,
-            user_role: "PATIENT"
+            user_role: "ROLE_PATIENT"
         }
         // console.log(FormData);
         // console.log(registerData);
@@ -216,13 +222,15 @@ const PatientModifer = () => {
 
             let personalresponse = await axios.post("http://localhost:3000/patient/add", FormData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
-            let registerresponse = await axios.post("http://localhost:3000/register", registerData, {
+            let registerresponse = await axios.post("http://localhost:3000/user/register", registerData, {
                 headers: {
-                    "Content-type": "Application/json"
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
@@ -250,6 +258,7 @@ const PatientModifer = () => {
             patient_contact: "",
             patient_issue: ""
         });
+        setUsername("");
         setPassword("");
         setConfirmPassword("");
     }
@@ -301,7 +310,13 @@ const PatientModifer = () => {
                         </div>
                         {!update_id &&
                             <div className="patientmodifer-formcontainer-logindetails">
-                                <h3>Generate Password</h3>
+                                <h3>Login Credentials</h3>
+                                <div className="patientmodifer-formcontainer-field">
+                                    <label htmlFor="username">Username:</label>
+                                    <input type="text" name="username" id="username" required
+                                        value={Username} onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                </div>
                                 <div className="patientmodifer-formcontainer-field">
                                     <label htmlFor="password">New Password:</label>
                                     <input type="text" name="password" id="password" required
@@ -318,7 +333,7 @@ const PatientModifer = () => {
                     </div>
                     <div className="patientmodifer-formcontainer-field">
                         <div></div>
-                        {update_id === "" ?
+                        {!update_id ?
                             (<button className="header-bns" onClick={(e) => { handleSubmit(e) }}>Submit</button>)
                             :
                             (<button className="header-bns" onClick={(e) => { handleUpdate(e) }}>Update</button>)
