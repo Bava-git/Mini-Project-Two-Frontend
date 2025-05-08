@@ -96,3 +96,8 @@ body {
 .registerBn {
     margin-right: 30px;
 }
+
+.logo{
+    cursor: pointer;
+    
+}

@@ -50,6 +50,7 @@ function App() {
             <Route path="/doctor/modifer" element={<DoctorModifer />} />
             <Route path="/doctor/modifer/:update_id" element={<DoctorModifer />} />
             <Route path="/appointment/modifer" element={<AppointmentModifer />} />
+            <Route path="/appointment/modifer/:update_id" element={<AppointmentModifer />} />
           </Route>
 
         </Routes>

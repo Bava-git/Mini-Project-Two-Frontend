@@ -108,7 +108,7 @@ const DoctorModifer = () => {
     const [ConfirmPassword, setConfirmPassword] = useState('');
 
     useEffect(() => {
-        if (update_id != "") {
+        if (update_id) {
             LoadOldData(update_id);
         }
     }, []);

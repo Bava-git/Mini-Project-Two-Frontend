@@ -15,6 +15,19 @@ const ListOfAppointment = () => {
         fetchData();
     }, [])
 
+    const safeSort = (array) => {
+        if (!Array.isArray(array) || array.length === 0) {
+            return [];
+        }
+
+        return array.sort((a, b) => {
+            if (a.doctor_name && b.doctor_name) {
+                return a.doctor_name.localeCompare(b.doctor_name);
+            }
+            return 0;
+        });
+    };
+
     const fetchData = async (date) => {
         try {
             let response = await axios.get("http://localhost:3000/appointment", {
@@ -23,13 +36,14 @@ const ListOfAppointment = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
-            let data = response.data;
+            let DoctorSchedule = response.data;
             if (date) {
-                data = data.filter((element) => {
+                DoctorSchedule = DoctorSchedule.filter((element) => {
                     return format(element.appointment_date, "yyyy-MM-dd") === date
                 })
             }
-            setAppointmentList(data);
+            DoctorSchedule = safeSort(DoctorSchedule);
+            setAppointmentList(DoctorSchedule);
         } catch (error) {
             console.log("List Of Patient " + error);
         }
@@ -103,14 +117,16 @@ const ListOfAppointment = () => {
             <td>{format(element.appointment_date, "dd-MM-yyyy")}</td>
             <td>{element.appointment_start_time}</td>
             <td>{element.appointment_end_time}</td>
-            <td><button className="listofpatient-table-bookBn" onClick={() => { handleBooking(JSON.stringify(element)) }}>Book</button></td>
+            <td>
+                <button className="listofpatient-table-bookBn" onClick={() => { handleBooking(JSON.stringify(element)) }}>Book</button>
+            </td>
         </tr>)
     }
 
     return (
         <div className="listofpatient-Container">
             <div className="listofpatient-table">
-                <h3 className="listofpatient-table-title">Visit schedule</h3>
+                <h3 className="listofpatient-table-title">Doctor Schedule</h3>
                 <div className="appointment-date">
                     <p className="appointment-date-title">Search by date</p>
                     <input type="date" name="" id="" onChange={(e) => { fetchData(e.target.value) }} />
@@ -134,16 +150,6 @@ const ListOfAppointment = () => {
                     </tbody>
                 </table>
             </div>
-
-            {/* <div className="listofpatient-popupmenu">
-                <p className="popupmenu-title">Are you sure?</p>
-                <div className="popupmenu-BnDiv">
-                    <button className="popupmenu-noBn">No</button>
-                    <button className="popupmenu-yesBn">Yes</button>
-                </div>
-            </div> */}
-
-
         </div>
     )
 }
@@ -212,7 +218,7 @@ const AppointmentModifer = () => {
                 }
             })
             if (response.status === 201) {
-                toast.success("Appointment added successfully!")
+                toast.success("Doctor schedule added successfully!")
                 resetTheForm();
             }
         } catch (error) {
@@ -234,15 +240,15 @@ const AppointmentModifer = () => {
 
     return (
         <div className="patientmodifer-container">
-            <h2 className="patientmodifer-container-title">New Patient Registation</h2>
+            <h2 className="patientmodifer-container-title">New Appointment Registation</h2>
             <div className="patientmodifer-formcontainer">
                 <form ref={AppointmentForm}>
                     <div className="patientmodifer-formcontainer-seperate">
                         <div className="patientmodifer-formcontainer-personaldetails">
                             <div className="patientmodifer-formcontainer-field">
                                 <label htmlFor="doctorname">Doctor Name:</label>
-                                <select name="doctor_id" id="doctorname" onChange={handleSelect}>
-                                    <option value=""></option>
+                                <select name="doctor_id" id="doctorname" onChange={handleSelect} >
+                                    <option value="">Select Doctor</option>
                                     {DoctorList.map((element) => (
                                         <option key={element.doctor_id} value={JSON.stringify(element)}>
                                             {element.doctor_name + " " + element.doctor_education + " " + element.doctor_specializedfield}

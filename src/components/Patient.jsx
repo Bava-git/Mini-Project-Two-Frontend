@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const ListOfPatient = () => {
     const [PatientList, setPatientList] = useState([]);
@@ -118,7 +119,7 @@ const PatientModifer = () => {
     const PatientForm = useRef(null);
 
     useEffect(() => {
-        if (update_id != "") {
+        if (update_id) {
             LoadOldData(update_id);
         }
     }, []);
@@ -220,26 +221,33 @@ const PatientModifer = () => {
 
         try {
 
-            let personalresponse = await axios.post("http://localhost:3000/patient/add", FormData, {
-                headers: {
-                    "Content-type": "Application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            })
-
             let registerresponse = await axios.post("http://localhost:3000/user/register", registerData, {
                 headers: {
                     "Content-type": "Application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
 
-            if (personalresponse.status === 201) {
-                toast.success("Patient added successfully!")
-                if (registerresponse.status === 201) {
-                    toast.success("Patient registered successfully!")
-                    resetTheForm();
+            if (registerresponse.status === 201) {
+                toast.success("Patient registered successfully!")
+                const token = await registerresponse.data.token;
+                localStorage.setItem("token", token);
+
+                const decoded = jwtDecode(token);
+                let role = decoded.roles;
+                localStorage.setItem("role", role);
+            }
+
+            let personalresponse = await axios.post("http://localhost:3000/patient/add", FormData, {
+                headers: {
+                    "Content-type": "Application/json",
                 }
+            })
+
+
+            if (personalresponse.status === 201) {
+                toast.success("Patient added successfully!");
+                Navigate("/appointment/list");
+                resetTheForm();
             }
 
         } catch (error) {
@@ -313,7 +321,7 @@ const PatientModifer = () => {
                                 <h3>Login Credentials</h3>
                                 <div className="patientmodifer-formcontainer-field">
                                     <label htmlFor="username">Username:</label>
-                                    <input type="text" name="username" id="username" required
+                                    <input type="text" name="username" id="username" required autoComplete="off"
                                         value={Username} onChange={(e) => setUsername(e.target.value)}
                                     />
                                 </div>

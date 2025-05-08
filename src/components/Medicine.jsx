@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
+import { jwtDecode } from "jwt-decode";
 
 const MedicineManager = () => {
 
@@ -46,7 +47,28 @@ const MedicineManager = () => {
 
     }
 
-    const handleMedicineUpdate = () => {
+    const handleMedicineUpdate = async (id) => {
+
+        try {
+            let response = await axios.get(`http://localhost:3000/medication/id/${id}`, {
+                headers: {
+                    "Content-type": "Application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+
+            let UpdateMedicine = response.data;
+            setmedicine_id(UpdateMedicine.medicine_id);
+            setmedicine_name(UpdateMedicine.medicine_name);
+            setmedicine_Morning(UpdateMedicine.medicine_Morning);
+            setmedicine_Afternoon(UpdateMedicine.medicine_Afternoon);
+            setmedicine_night(UpdateMedicine.medicine_night);
+            setmedicine_afterfood(UpdateMedicine.medicine_afterfood);
+            setmedicine_days(UpdateMedicine.medicine_days);
+
+        } catch (error) {
+            console.log("List Of Doctor " + error);
+        }
 
     }
 
@@ -146,6 +168,8 @@ const MedicineManager = () => {
             return;
         }
 
+        // console.log(sendData);
+
         try {
             let response = await axios.post("http://localhost:3000/medication/add", sendData, {
                 headers: {
@@ -174,7 +198,6 @@ const MedicineManager = () => {
         setmedicine_night(false);
         setmedicine_afterfood(true);
         setmedicine_days("");
-        setmedicine_id("M" + Math.floor(1000 + Math.random() * 9000))
     }
 
 
@@ -246,40 +269,49 @@ const MedicineManager = () => {
                         <input type="text" name="medicinename" id="medicinename" value={medicine_name} onChange={(e) => setmedicine_name(e.target.value)} />
                     </div>
                     <div className="medicine-add-field">
-                        <label htmlFor="medicineage">Daily Medication Routine:</label>
+                        <label htmlFor="morning">Daily Medication Routine:</label>
                         <div className="medicine-add-routine">
                             <input type="checkbox" name="morning" id="morning" checked={medicine_Morning} onChange={(e) => {
                                 if (e.target.checked) {
                                     setmedicine_Morning(true);
+                                } else {
+                                    setmedicine_Morning(false);
                                 }
                             }} />
                             <label htmlFor="morning">Morning</label>
                             <input type="checkbox" name="afnun" id="afnun" checked={medicine_Afternoon} onChange={(e) => {
                                 if (e.target.checked) {
                                     setmedicine_Afternoon(true);
+                                } else {
+                                    setmedicine_Afternoon(false);
                                 }
                             }} />
                             <label htmlFor="afnun">After noon</label>
                             <input type="checkbox" name="night" id="night" checked={medicine_night} onChange={(e) => {
                                 if (e.target.checked) {
                                     setmedicine_night(true);
+                                } else {
+                                    setmedicine_night(false);
                                 }
                             }} />
                             <label htmlFor="night">Night</label>
                         </div>
                     </div>
                     <div className="medicine-add-field">
-                        <label htmlFor="medicineage">Food Intake:</label>
+                        <label htmlFor="before">Food Intake:</label>
                         <div className="medicine-add-routine">
-                            <input type="radio" name="intake" id="before" checked={!medicine_afterfood} onChange={(e) => { setmedicine_afterfood(false) }} />
+                            <input type="radio" name="intake" id="before" checked={!medicine_afterfood}
+                                onChange={(e) => { setmedicine_afterfood(false) }} />
                             <label htmlFor="before">Before</label>
-                            <input type="radio" name="intake" id="after" checked={medicine_afterfood} onChange={(e) => { setmedicine_afterfood(true) }} />
+                            <input type="radio" name="intake" id="after" checked={medicine_afterfood}
+                                onChange={(e) => { setmedicine_afterfood(true) }} />
                             <label htmlFor="after">After</label>
                         </div>
                     </div>
                     <div className="medicine-add-field">
                         <label htmlFor="medicinedays">Medication Days:</label>
-                        <input type="text" name="medicinedays" id="medicinedays" value={medicine_days} onChange={(e) => setmedicine_days(e.target.value)} />
+                        <input type="text" name="medicinedays" id="medicinedays" value={medicine_days}
+                            onChange={(e) => setmedicine_days(e.target.value)} />
                     </div>
                     <div className="medicine-add-field">
                         <div></div>
@@ -294,6 +326,7 @@ const MedicineManager = () => {
 const MedicineManagerPatientSide = () => {
 
     const [MedicationList, setMedicationList] = useState([]);
+    let UserID = jwtDecode(localStorage.getItem("token")).userId;
 
     useEffect(() => {
         fetchData();
@@ -307,7 +340,11 @@ const MedicineManagerPatientSide = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
-            setMedicationList(response.data);
+            let MedicationForPatient = response.data;
+            MedicationForPatient = MedicationForPatient.filter((element) => {
+                return element.patient_id === UserID
+            })
+            setMedicationList(MedicationForPatient);
         } catch (error) {
             console.log("List Of Doctor " + error);
         }
